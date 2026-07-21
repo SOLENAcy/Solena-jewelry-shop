@@ -103,3 +103,24 @@ footer{
 footer a{
     color:#d4af37;
 }
+.cart-bar{
+    text-align:right;
+    padding:20px;
+}
+
+#cartButton{
+    background:#d4af37;
+    color:white;
+    border:none;
+    padding:10px 20px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.cart{
+    background:white;
+    margin:20px;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 5px 15px rgba(0,0,0,.1);
+}
