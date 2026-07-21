@@ -8,12 +8,24 @@ document.addEventListener("DOMContentLoaded", () => {
     const cartItems = document.getElementById("cartItems");
     const cartCount = document.getElementById("cartCount");
     const cartTotal = document.getElementById("cartTotal");
+    const checkoutBtn = document.getElementById("checkoutBtn");
+const checkoutForm = document.getElementById("checkoutForm");
 
     cartButton.addEventListener("click", () => {
         cartBox.style.display =
             cartBox.style.display === "block" ? "none" : "block";
     });
+checkoutBtn.addEventListener("click", () => {
 
+    if (cart.length === 0) {
+        alert("Your cart is empty!");
+        return;
+    }
+
+    checkoutForm.style.display = "block";
+    cartBox.style.display = "none";
+
+});
     buttons.forEach(button => {
         button.addEventListener("click", () => {
 
