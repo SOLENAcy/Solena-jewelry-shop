@@ -10,39 +10,63 @@ document.addEventListener("DOMContentLoaded", () => {
     const cartTotal = document.getElementById("cartTotal");
 
     cartButton.addEventListener("click", () => {
-        if (cartBox.style.display === "none" || cartBox.style.display === "") {
-            cartBox.style.display = "block";
-        } else {
-            cartBox.style.display = "none";
-        }
+        cartBox.style.display =
+            cartBox.style.display === "block" ? "none" : "block";
     });
 
     buttons.forEach(button => {
         button.addEventListener("click", () => {
+
             const product = button.parentElement;
             const name = product.querySelector("h3").innerText;
             const price = parseFloat(
-                product.querySelector(".price").innerText.replace("€", "")
+                product.querySelector(".price").innerText.replace("€","")
             );
 
-            cart.push({ name, price });
-       
+            cart.push({
+                name: name,
+                price: price
+            });
+
             updateCart();
+
         });
     });
 
-    function updateCart() {
+    function updateCart(){
+
         cartItems.innerHTML = "";
 
         let total = 0;
 
-        cart.forEach(item => {
+        cart.forEach((item,index)=>{
+
             total += item.price;
-            cartItems.innerHTML += `<p>${item.name} - €${item.price}</p>`;
+
+            cartItems.innerHTML += `
+            <div style="display:flex;justify-content:space-between;align-items:center;margin:10px 0;">
+                <span>${item.name} - €${item.price}</span>
+                <button class="remove-btn" data-index="${index}">❌</button>
+            </div>
+            `;
+
         });
 
         cartCount.innerText = cart.length;
         cartTotal.innerText = total.toFixed(2);
+
+        document.querySelectorAll(".remove-btn").forEach(btn=>{
+            btn.addEventListener("click",()=>{
+
+                const index = Number(btn.dataset.index);
+
+                cart.splice(index,1);
+
+                updateCart();
+
+            });
+        });
+
     }
 
 });
