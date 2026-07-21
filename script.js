@@ -32,15 +32,17 @@ checkoutBtn.addEventListener("click", () => {
 
             const product = button.parentElement;
             const name = product.querySelector("h3").innerText;
+            const colorSelect = product.querySelector(".color-select");
+
+const color = colorSelect ? colorSelect.value : "";
             const price = parseFloat(
                 product.querySelector(".price").innerText.replace("€","")
             );
 
             cart.push({
-                name: name,
-                price: price
-            });
-
+    name: color ? `${name} (${color})` : name,
+    price: price
+});
             updateCart();
 
         });
