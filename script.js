@@ -30,6 +30,7 @@ checkoutBtn.addEventListener("click", () => {
 const payBtn = document.getElementById("payBtn");
 
 payBtn.addEventListener("click", async () => {
+    alert("PAY BUTTON WORKS");
 
     const response = await fetch("/.netlify/functions/create-checkout", {
         method: "POST",
