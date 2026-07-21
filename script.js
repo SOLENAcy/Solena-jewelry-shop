@@ -16,7 +16,6 @@ const checkoutForm = document.getElementById("checkoutForm");
             cartBox.style.display === "block" ? "none" : "block";
     });
 checkoutBtn.addEventListener("click", () => {
-    alert("Checkout clicked!");
 
     if (cart.length === 0) {
         alert("Your cart is empty!");
@@ -25,6 +24,28 @@ checkoutBtn.addEventListener("click", () => {
 
     checkoutForm.style.display = "block";
     cartBox.style.display = "none";
+
+});
+
+const payBtn = document.getElementById("payBtn");
+
+payBtn.addEventListener("click", async () => {
+
+    const response = await fetch("/.netlify/functions/create-checkout", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ items: cart })
+    });
+
+    const data = await response.json();
+
+    if (data.url) {
+        window.location.href = data.url;
+    } else {
+        alert("Payment error.");
+    }
 
 });
     buttons.forEach(button => {
