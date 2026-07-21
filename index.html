@@ -103,7 +103,16 @@ margin-top:40px;
 <h1>Solena Jewelry</h1>
 <p>Elegant Jewelry Collection</p>
 </header>
+<div class="cart-bar">
+    <button id="cartButton">🛒 Cart (<span id="cartCount">0</span>)</button>
+</div>
 
+<div id="cart" class="cart" style="display:none;">
+    <h2>Your Cart</h2>
+    <div id="cartItems"></div>
+    <h3>Total: €<span id="cartTotal">0</span></h3>
+    <button id="checkoutBtn">Checkout</button>
+</div>
 <section class="products">
     <div class="product">
     <img src="pic1.png.png" alt="Crystal Charm Bracelet">
