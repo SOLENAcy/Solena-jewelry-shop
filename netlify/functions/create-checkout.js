@@ -21,11 +21,16 @@ exports.handler = async (event) => {
     }));
 
     const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      line_items,
-      success_url: "https://gilded-baklava-cc2ec8.netlify.app/?success=true",
-      cancel_url: "https://gilded-baklava-cc2ec8.netlify.app/?canceled=true"
-    });
+  mode: "payment",
+  line_items,
+
+  metadata: {
+    products: JSON.stringify(items.map(item => item.name))
+  },
+
+  success_url: "https://gilded-baklava-cc2ec8.netlify.app/?success=true",
+  cancel_url: "https://gilded-baklava-cc2ec8.netlify.app/?canceled=true"
+});
 
     return {
       statusCode: 200,
