@@ -26,6 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
             cart.push({ name, price });
+            alert(name + " added!");
             updateCart();
         });
     });
