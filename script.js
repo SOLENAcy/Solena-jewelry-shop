@@ -16,6 +16,7 @@ const checkoutForm = document.getElementById("checkoutForm");
             cartBox.style.display === "block" ? "none" : "block";
     });
 checkoutBtn.addEventListener("click", () => {
+    alert("Checkout clicked!");
 
     if (cart.length === 0) {
         alert("Your cart is empty!");
