@@ -30,7 +30,6 @@ checkoutBtn.addEventListener("click", () => {
 const payBtn = document.getElementById("payBtn");
 
 payBtn.addEventListener("click", async () => {
-    alert("PAY BUTTON WORKS");
 
     const response = await fetch("/.netlify/functions/create-checkout", {
         method: "POST",
@@ -41,18 +40,14 @@ payBtn.addEventListener("click", async () => {
     });
 
     const data = await response.json();
-    console.log("STATUS:", response.status);
-console.log("DATA:", data);
 
     if (data.url) {
-        else {
-    console.log(data);
-    alert("Payment error: " + JSON.stringify(data));
-}
         window.location.href = data.url;
     } else {
         alert("Payment error.");
     }
+
+});
 
 });
     buttons.forEach(button => {
