@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     payBtn.addEventListener("click", async () => {
 
-        const response = await fetch("/.netlify/functions/create-checkout", {
+        const response = await fetch("https://gilded-baklava-cc2ec8.netlify.app/.netlify/functions/create-checkout", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
