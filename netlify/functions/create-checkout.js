@@ -7,103 +7,70 @@ const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
-console.log("SUPABASE_URL exists:", !!process.env.SUPABASE_URL);
-console.log("SERVICE KEY exists:", !!process.env.SUPABASE_SERVICE_ROLE_KEY);
-exports.handler = async (event) => {
 
-  if (event.httpMethod !== "POST") {
-    return {
-      statusCode: 405,
-      body: JSON.stringify({
-        error: "Method not allowed"
-      })
-    };
-  }
+exports.handler = async (event) => {
 
   try {
 
     const { items } = JSON.parse(event.body);
 
 
-    // CHECK STOCK
-    for (const item of items) {
-
-      const { data, error } = await supabase
-        .from("products")
-        .select("stock")
-        .eq("name", item.name)
-        .single();
+    console.log("SUPABASE URL EXISTS:", !!process.env.SUPABASE_URL);
+    console.log("SERVICE KEY EXISTS:", !!process.env.SUPABASE_SERVICE_ROLE_KEY);
 
 
-      if (error) {
-        throw new Error(
-          `Stock check failed for ${item.name}: ${error.message}`
-        );
-      }
+    // TEST SUPABASE CONNECTION
+    const { data: testData, error: testError } = await supabase
+      .from("products")
+      .select("*")
+      .limit(1);
 
 
-      if (data.stock <= 0) {
+    console.log("SUPABASE TEST DATA:", testData);
+    console.log("SUPABASE TEST ERROR:", testError);
 
-        return {
-          statusCode: 400,
-          body: JSON.stringify({
-            error: `${item.name} is sold out`
-          })
-        };
 
-      }
-
+    if (testError) {
+      throw testError;
     }
 
 
     const priceMap = {
 
       "Crystal Crystal Drop Necklace":
-        "price_1Tvf1RV05QL3H1iJ8C9oBNOT",
+      "price_1Tvf1RV05QL3H1iJ8C9oBNOT",
 
       "Moon Crab Pendant":
-        "price_1TvfADV05QL3H1iJVnEHDB97",
+      "price_1TvfADV05QL3H1iJVnEHDB97",
 
       "Cross Necklace (Gold)":
-        "price_1TvfAhV05QL3H1iJhLIubXXa",
+      "price_1TvfAhV05QL3H1iJhLIubXXa",
 
       "Cross Necklace (Silver)":
-        "price_1TvfKxV05QL3H1iJWEDJugmG",
+      "price_1TvfKxV05QL3H1iJWEDJugmG",
 
       "Birthstone Pendant":
-        "price_1TvfLrV05QL3H1iJwvmhds8E",
+      "price_1TvfLrV05QL3H1iJwvmhds8E",
 
       "Tree of Life Necklace":
-        "price_1TvfMCV05QL3H1iJr3ONgkZg"
+      "price_1TvfMCV05QL3H1iJr3ONgkZg"
 
     };
 
 
-    const line_items = items.map(item => {
+    const line_items = items.map(item => ({
 
-      const price = priceMap[item.name];
+      price: priceMap[item.name],
+      quantity: 1
 
-      if (!price) {
-        throw new Error(
-          `No Stripe price found for ${item.name}`
-        );
-      }
-
-      return {
-        price: price,
-        quantity: 1
-      };
-
-    });
-
+    }));
 
 
     const session = await stripe.checkout.sessions.create({
 
       mode: "payment",
 
-      line_items: line_items,
-
+      line_items,
 
       metadata: {
         products: JSON.stringify(
@@ -111,25 +78,18 @@ exports.handler = async (event) => {
         )
       },
 
-
       success_url:
-        "https://gilded-baklava-cc2ec8.netlify.app/?success=true",
-
+      "https://gilded-baklava-cc2ec8.netlify.app/?success=true",
 
       cancel_url:
-        "https://gilded-baklava-cc2ec8.netlify.app/?canceled=true"
+      "https://gilded-baklava-cc2ec8.netlify.app/?canceled=true"
 
     });
-
 
 
     return {
 
       statusCode: 200,
-
-      headers: {
-        "Content-Type": "application/json"
-      },
 
       body: JSON.stringify({
         url: session.url
@@ -140,18 +100,14 @@ exports.handler = async (event) => {
 
   } catch (err) {
 
-    console.log(err);
+    console.log("ERROR:", err);
 
     return {
 
       statusCode: 500,
 
-      headers: {
-        "Content-Type": "application/json"
-      },
-
       body: JSON.stringify({
-        error: err.   message
+        error: err.message
       })
 
     };
