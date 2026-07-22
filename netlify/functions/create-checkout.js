@@ -121,14 +121,12 @@ exports.handler = async (event) => {
 
 
     return {
-
-      statusCode: 500,
-
-      body: JSON.stringify({
-        error: err.message
-      })
-
-    };
+  statusCode: 500,
+  body: JSON.stringify({ 
+    error: err.message,
+    stack: err.stack
+  })
+};
 
 
   }
