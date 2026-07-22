@@ -151,7 +151,7 @@ exports.handler = async (event) => {
       },
 
       body: JSON.stringify({
-        error: err.message
+        error: err.   message
       })
 
     };
