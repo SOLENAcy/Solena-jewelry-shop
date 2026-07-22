@@ -8,30 +8,45 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
+
 exports.handler = async (event) => {
+
+  const headers = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS"
+  };
+
+
+  if (event.httpMethod === "OPTIONS") {
+    return {
+      statusCode: 200,
+      headers,
+      body: ""
+    };
+  }
+
 
   try {
 
     const { items } = JSON.parse(event.body);
 
 
-    console.log("SUPABASE URL EXISTS:", !!process.env.SUPABASE_URL);
-    console.log("SERVICE KEY EXISTS:", !!process.env.SUPABASE_SERVICE_ROLE_KEY);
+    console.log("ITEMS:", items);
 
 
-    // TEST SUPABASE CONNECTION
-    const { data: testData, error: testError } = await supabase
+    const { data, error } = await supabase
       .from("products")
       .select("*")
       .limit(1);
 
 
-    console.log("SUPABASE TEST DATA:", testData);
-    console.log("SUPABASE TEST ERROR:", testError);
+    console.log("SUPABASE:", data);
+    console.log("SUPABASE ERROR:", error);
 
 
-    if (testError) {
-      throw testError;
+    if (error) {
+      throw error;
     }
 
 
@@ -58,12 +73,14 @@ exports.handler = async (event) => {
     };
 
 
-    const line_items = items.map(item => ({
+    const line_items = items.map(item => {
 
-      price: priceMap[item.name],
-      quantity: 1
+      return {
+        price: priceMap[item.name],
+        quantity: 1
+      };
 
-    }));
+    });
 
 
     const session = await stripe.checkout.sessions.create({
@@ -71,12 +88,6 @@ exports.handler = async (event) => {
       mode: "payment",
 
       line_items,
-
-      metadata: {
-        products: JSON.stringify(
-          items.map(item => item.name)
-        )
-      },
 
       success_url:
       "https://gilded-baklava-cc2ec8.netlify.app/?success=true",
@@ -91,6 +102,8 @@ exports.handler = async (event) => {
 
       statusCode: 200,
 
+      headers,
+
       body: JSON.stringify({
         url: session.url
       })
@@ -98,16 +111,19 @@ exports.handler = async (event) => {
     };
 
 
-  } catch (err) {
+  } catch (error) {
 
-    console.log("ERROR:", err);
+    console.log("ERROR:", error);
+
 
     return {
 
       statusCode: 500,
 
+      headers,
+
       body: JSON.stringify({
-        error: err.message
+        error: error.message
       })
 
     };
