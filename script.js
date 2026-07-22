@@ -1,3 +1,4 @@
+alert("SCRIPT LOADED");
 document.addEventListener("DOMContentLoaded", () => {
 
     let cart = [];
