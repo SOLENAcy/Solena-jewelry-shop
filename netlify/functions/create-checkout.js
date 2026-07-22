@@ -20,7 +20,7 @@ exports.handler = async (event) => {
     for (const item of items) {
 
       const { data, error } = await supabase
-       .from("Crystal Crystal Drop Necklace")
+       .from("products")
         .select("stock")
         .eq("name", item.name)
         .single();
