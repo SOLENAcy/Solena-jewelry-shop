@@ -7,7 +7,8 @@ const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
-
+console.log("SUPABASE_URL exists:", !!process.env.SUPABASE_URL);
+console.log("SERVICE KEY exists:", !!process.env.SUPABASE_SERVICE_ROLE_KEY);
 exports.handler = async (event) => {
 
   if (event.httpMethod !== "POST") {
