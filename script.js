@@ -9,73 +9,84 @@ document.addEventListener("DOMContentLoaded", () => {
     const cartCount = document.getElementById("cartCount");
     const cartTotal = document.getElementById("cartTotal");
     const checkoutBtn = document.getElementById("checkoutBtn");
-const checkoutForm = document.getElementById("checkoutForm");
+    const checkoutForm = document.getElementById("checkoutForm");
+    const payBtn = document.getElementById("payBtn");
+
 
     cartButton.addEventListener("click", () => {
         cartBox.style.display =
             cartBox.style.display === "block" ? "none" : "block";
     });
-checkoutBtn.addEventListener("click", () => {
 
-    if (cart.length === 0) {
-        alert("Your cart is empty!");
-        return;
-    }
 
-    checkoutForm.style.display = "block";
-    cartBox.style.display = "none";
+    checkoutBtn.addEventListener("click", () => {
 
-});
+        if (cart.length === 0) {
+            alert("Your cart is empty!");
+            return;
+        }
 
-const payBtn = document.getElementById("payBtn");
+        checkoutForm.style.display = "block";
+        cartBox.style.display = "none";
 
-payBtn.addEventListener("click", async () => {
-
-    const response = await fetch("/.netlify/functions/create-checkout", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ items: cart })
     });
 
-    const data = await response.json();
 
-    if (data.url) {
-        window.location.href = data.url;
-    } else {
-        alert("Payment error.");
-    }
+    payBtn.addEventListener("click", async () => {
 
-});
+        const response = await fetch("/.netlify/functions/create-checkout", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ items: cart })
+        });
 
-});
+        const data = await response.json();
+
+        if (data.url) {
+            window.location.href = data.url;
+        } else {
+            alert("Payment error.");
+        }
+
+    });
+
+
     buttons.forEach(button => {
+
         button.addEventListener("click", () => {
 
             const product = button.parentElement;
             const name = product.querySelector("h3").innerText;
             const colorSelect = product.querySelector(".color-select");
 
-const color = colorSelect ? colorSelect.value : "";
+            const color = colorSelect ? colorSelect.value : "";
+
             const price = parseFloat(
                 product.querySelector(".price").innerText.replace("€","")
             );
 
+
             cart.push({
-    name: color ? `${name} (${color})` : name,
-    price: price
-});
+                name: color ? `${name} (${color})` : name,
+                price: price
+            });
+
+
             updateCart();
 
         });
+
     });
+
 
     function updateCart(){
 
         cartItems.innerHTML = "";
 
         let total = 0;
+
 
         cart.forEach((item,index)=>{
 
@@ -90,10 +101,13 @@ const color = colorSelect ? colorSelect.value : "";
 
         });
 
+
         cartCount.innerText = cart.length;
         cartTotal.innerText = total.toFixed(2);
 
+
         document.querySelectorAll(".remove-btn").forEach(btn=>{
+
             btn.addEventListener("click",()=>{
 
                 const index = Number(btn.dataset.index);
@@ -103,8 +117,10 @@ const color = colorSelect ? colorSelect.value : "";
                 updateCart();
 
             });
+
         });
 
     }
+
 
 });
