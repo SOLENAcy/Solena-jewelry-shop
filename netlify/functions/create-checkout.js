@@ -4,7 +4,7 @@ const { createClient } = require("@supabase/supabase-js");
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 const supabase = createClient(
-  process.env.SUPABASE_URL,
+  "https://pamhonsjqktmpdctstjj.supabase.co",
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
@@ -32,17 +32,10 @@ exports.handler = async (event) => {
     const { items } = JSON.parse(event.body);
 
 
-    console.log("ITEMS:", items);
-
-
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("products")
       .select("*")
       .limit(1);
-
-
-    console.log("SUPABASE:", data);
-    console.log("SUPABASE ERROR:", error);
 
 
     if (error) {
@@ -75,6 +68,10 @@ exports.handler = async (event) => {
 
     const line_items = items.map(item => {
 
+      if (!priceMap[item.name]) {
+        throw new Error("No Stripe price found for " + item.name);
+      }
+
       return {
         price: priceMap[item.name],
         quantity: 1
@@ -88,6 +85,12 @@ exports.handler = async (event) => {
       mode: "payment",
 
       line_items,
+
+      metadata: {
+        products: JSON.stringify(
+          items.map(item => item.name)
+        )
+      },
 
       success_url:
       "https://gilded-baklava-cc2ec8.netlify.app/?success=true",
@@ -113,8 +116,7 @@ exports.handler = async (event) => {
 
   } catch (error) {
 
-    console.log("ERROR:", error);
-
+    console.log(error);
 
     return {
 
