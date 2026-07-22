@@ -41,8 +41,14 @@ payBtn.addEventListener("click", async () => {
     });
 
     const data = await response.json();
+    console.log("STATUS:", response.status);
+console.log("DATA:", data);
 
     if (data.url) {
+        else {
+    console.log(data);
+    alert("Payment error: " + JSON.stringify(data));
+}
         window.location.href = data.url;
     } else {
         alert("Payment error.");
