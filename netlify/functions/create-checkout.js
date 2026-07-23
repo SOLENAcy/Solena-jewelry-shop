@@ -32,38 +32,6 @@ exports.handler = async (event) => {
     const { items } = JSON.parse(event.body);
 
 
-    // CHECK STOCK
-
-    for (const item of items) {
-
-      const { data, error } = await supabase
-        .from("products")
-        .select("stock")
-        .eq("name", item.name)
-        .single();
-
-
-      if (error) {
-        throw error;
-      }
-
-
-      if (data.stock <= 0) {
-
-        return {
-          statusCode: 400,
-          headers,
-          body: JSON.stringify({
-            error: `${item.name} is sold out`
-          })
-        };
-
-      }
-
-    }
-
-
-
     const priceMap = {
 
       "Crystal Crystal Drop Necklace":
@@ -87,13 +55,11 @@ exports.handler = async (event) => {
     };
 
 
-
     const line_items = items.map(item => {
 
       if (!priceMap[item.name]) {
         throw new Error("No Stripe price found for " + item.name);
       }
-
 
       return {
         price: priceMap[item.name],
@@ -103,13 +69,11 @@ exports.handler = async (event) => {
     });
 
 
-
     const session = await stripe.checkout.sessions.create({
 
       mode: "payment",
 
       line_items,
-
 
       metadata: {
         products: JSON.stringify(
@@ -117,16 +81,13 @@ exports.handler = async (event) => {
         )
       },
 
-
       success_url:
       "https://gilded-baklava-cc2ec8.netlify.app/?success=true",
-
 
       cancel_url:
       "https://gilded-baklava-cc2ec8.netlify.app/?canceled=true"
 
     });
-
 
 
     return {
@@ -144,9 +105,7 @@ exports.handler = async (event) => {
 
   } catch (error) {
 
-
     console.log(error);
-
 
     return {
 
