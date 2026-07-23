@@ -32,15 +32,36 @@ exports.handler = async (event) => {
     const { items } = JSON.parse(event.body);
 
 
-    const { error } = await supabase
-      .from("products")
-      .select("*")
-      .limit(1);
+    // CHECK STOCK
+
+    for (const item of items) {
+
+      const { data, error } = await supabase
+        .from("products")
+        .select("stock")
+        .eq("name", item.name)
+        .single();
 
 
-    if (error) {
-      throw error;
+      if (error) {
+        throw error;
+      }
+
+
+      if (data.stock <= 0) {
+
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({
+            error: `${item.name} is sold out`
+          })
+        };
+
+      }
+
     }
+
 
 
     const priceMap = {
@@ -61,9 +82,10 @@ exports.handler = async (event) => {
       "price_1TvfLrV05QL3H1iJwvmhds8E",
 
       "Tree of Life Necklace":
-      "price_1TvfMCV05QL3H1iJr3ONgkZg"
+      "price_1TvfMCV05QL3H1iJr3ONgkZgZ"
 
     };
+
 
 
     const line_items = items.map(item => {
@@ -71,6 +93,7 @@ exports.handler = async (event) => {
       if (!priceMap[item.name]) {
         throw new Error("No Stripe price found for " + item.name);
       }
+
 
       return {
         price: priceMap[item.name],
@@ -80,11 +103,13 @@ exports.handler = async (event) => {
     });
 
 
+
     const session = await stripe.checkout.sessions.create({
 
       mode: "payment",
 
       line_items,
+
 
       metadata: {
         products: JSON.stringify(
@@ -92,13 +117,16 @@ exports.handler = async (event) => {
         )
       },
 
+
       success_url:
       "https://gilded-baklava-cc2ec8.netlify.app/?success=true",
+
 
       cancel_url:
       "https://gilded-baklava-cc2ec8.netlify.app/?canceled=true"
 
     });
+
 
 
     return {
@@ -116,7 +144,9 @@ exports.handler = async (event) => {
 
   } catch (error) {
 
+
     console.log(error);
+
 
     return {
 
